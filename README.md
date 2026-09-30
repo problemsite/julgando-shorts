@@ -571,3 +571,7 @@ Ao começar cada Short:
 ### v9
 - JULGUE! → jogo: cortina subindo de baixo pra cima (com borda dourada) revelando o jogo.
   Corrigido também: antes o jogo escondia a contagem na hora e cortava a animação de saída.
+
+### v10
+- Short sincronizado por padrão entre os dois jogadores (sem botão): pausar/tocar/avançar vale para os dois.
+- Player mais limpo: só play/pause, volume e a barra de progresso, aparecendo apenas com o mouse em cima.

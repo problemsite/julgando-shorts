@@ -6720,3 +6720,11 @@ html[data-theme="light"] .title-accent { background:linear-gradient(90deg,#12b7d
 #screen-game.game-reveal .game-top { animation:gameCurtainIn .75s cubic-bezier(.2,.8,.2,1) both !important; }
 @keyframes gameCurtainIn { from { transform:translateY(24px); opacity:.6; } to { transform:none; opacity:1; } }
 .countdown-overlay.countdown-fade-out { box-shadow:0 6px 0 #ffe77a, 0 10px 40px color-mix(in srgb,#ffe77a 70%,transparent) !important; }
+
+/* Player mais limpo: só aparece o essencial, e só com o mouse em cima */
+.media-wrap.is-mirrored::after { content:none !important; }
+.short-ui-top { background:linear-gradient(180deg,rgba(0,0,0,.35),transparent) !important; padding-bottom:26px !important; }
+.short-ui-bottom { background:none !important; padding-top:14px !important; }
+.media-wrap.is-paused:not(:hover) .short-ui-top { opacity:0; }
+.short-ui-btn { background:transparent !important; }
+.short-ui-btn:hover { background:rgba(255,255,255,.16) !important; }

@@ -1320,8 +1320,9 @@ function shortUiFrame() {
    ===================================================================== */
 const mirror = { optin: { p1: false, p2: false }, state: null, lastSeq: 0, lastApplyAt: 0 };
 
+// Sincronizado por padrão: sempre que os dois jogadores estão na partida.
 function mirrorActive() {
-  return !!(mirror.optin.p1 && mirror.optin.p2 && state.slot);
+  return !!(state.slot && state.room?.players?.p1 && state.room?.players?.p2);
 }
 
 function mirrorTargetTime(ms) {
@@ -1412,40 +1413,19 @@ function renderMirrorButton() {
   document.querySelector(".media-wrap")?.classList.toggle("is-mirrored", active);
 }
 
-let mirrorWasActive = false;
 function installMirrorSync() {
-  listenWithRetry("mediasync/optin", snap => {
-    const v = snap.val() || {};
-    mirror.optin = { p1: !!v.p1, p2: !!v.p2 };
-    renderMirrorButton();
-    const active = mirrorActive();
-    if (active && !mirrorWasActive) {
-      toast("🔗 Short sincronizado entre os dois!");
-      if (state.slot === "p1") publishMirrorState();
-      else setTimeout(() => applyMirrorState(true), 400);
-    }
-    mirrorWasActive = active;
-  }, "espelho");
-
   listenWithRetry("mediasync/state", snap => {
     const ms = snap.val();
     if (!ms) return;
     mirror.state = ms;
     if (ms.seq === mirror.lastSeq) return; // o meu próprio comando
-    if (ms.by !== state.slot && typeof flashCenterIcon === "function") {
-      flashCenterIcon(ms.playing ? "play" : "pause");
-    }
     applyMirrorState(true);
   }, "estado-espelho");
 
   // Correção fina de tempo em tempo (vídeos que travam/carregam diferente).
   setInterval(() => { if (mirrorActive()) applyMirrorState(false); }, 2500);
 
-  $("#shortMirrorBtn")?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setMirrorOptin(!mirror.optin[state.slot]);
-    flashShortUi();
-  });
+
 }
 
 function installShortUi() {
@@ -1620,7 +1600,6 @@ function mountMedia(item, round) {
   document.querySelector(".media-wrap")?.classList.add("has-media");
   startMediaAtHalfVolume();
   mountStageBg(item);
-  flashShortUi(2600);
   onMirrorMediaMounted(round);
 }
 
@@ -3891,8 +3870,6 @@ async function boot() {
 
     if (room.status === "lobby") {
       destroyCurrentMedia();
-      // Volta ao lobby: desliga o espelhamento do Short (cada um liga de novo se quiser).
-      if (state.slot && mirror.optin[state.slot]) setMirrorOptin(false);
 
       if (state.countdownTimer) {
         clearInterval(state.countdownTimer);
