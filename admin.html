@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#06202c" />
+  <title>ADM — Julgando SHORTS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="stylesheet" href="./admin.css" />
+</head>
+<body class="admin-body">
+  <button id="themeToggle" class="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema">
+    <svg class="theme-svg theme-svg-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.4" />
+      <path d="M12 2.6V5.1M12 18.9v2.5M21.4 12h-2.5M5.1 12H2.6M18.65 5.35l-1.77 1.77M7.12 16.88l-1.77 1.77M18.65 18.65l-1.77-1.77M7.12 7.12 5.35 5.35" />
+    </svg>
+    <svg class="theme-svg theme-svg-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15.4 3.7a8.8 8.8 0 1 0 4.9 15.9 8.2 8.2 0 0 1-2.2.3c-4.8 0-8.7-3.9-8.7-8.7 0-3.1 1.6-5.8 4-7.5a8.8 8.8 0 0 0 2-.1Z" />
+    </svg>
+  </button>
+
+  <header class="adm-header">
+    <div class="adm-brand">
+      <span class="adm-hex" aria-hidden="true"><svg viewBox="0 0 40 44"><path d="M20 2 37 11.5v21L20 42 3 32.5v-21Z"/></svg></span>
+      <div>
+        <strong>Julgando <em>SHORTS</em></strong>
+        <small>painel do ADM</small>
+      </div>
+    </div>
+    <div class="adm-header-status">
+      <span id="liveStatus" class="adm-pill">conectando...</span>
+      <span id="saveState" class="adm-save-state">carregando...</span>
+    </div>
+    <a class="adm-open-game" href="./index.html" target="_blank" rel="noopener">Abrir jogo ↗</a>
+  </header>
+
+  <main class="adm-layout">
+    <section class="adm-main">
+      <nav class="adm-tabs" role="tablist">
+        <button class="adm-tab active" data-tab="shorts" role="tab" aria-selected="true">🎬 Shorts <b id="shortsCount">0/10</b></button>
+        <button class="adm-tab" data-tab="visual" role="tab" aria-selected="false">🎨 Visual</button>
+      </nav>
+
+      <!-- ===== SHORTS ===== -->
+      <div id="tab-shorts" class="adm-tab-panel active">
+        <div class="adm-toolbar">
+          <p>Cole os links, confira a prévia e arraste <span class="kbd">⠿</span> para mudar a ordem.</p>
+          <div class="adm-toolbar-actions">
+            <button id="fetchAllTitlesBtn" class="adm-btn ghost" type="button">↻ Buscar todos os títulos</button>
+            <button id="randomVotesBtn" class="adm-btn ghost" type="button">🎲 Sortear curtidas</button>
+          </div>
+        </div>
+        <ol id="shortsEditor" class="short-list"></ol>
+      </div>
+
+      <!-- ===== VISUAL ===== -->
+      <div id="tab-visual" class="adm-tab-panel">
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <div>
+              <h2>Vídeo de fundo no palco</h2>
+              <p>O mesmo Short aparece desfocado atrás do container central. Some sozinho quando o vídeo não está tocando.</p>
+            </div>
+            <label class="adm-switch"><input id="stageBgEnabled" type="checkbox" checked><span></span></label>
+          </div>
+          <div class="bg-settings" id="bgSettings">
+            <div class="bg-controls">
+              <label class="adm-range">
+                <span>Desfoque <b id="stageBgBlurValue">18px</b></span>
+                <input id="stageBgBlur" type="range" min="0" max="40" step="1" value="18">
+              </label>
+              <label class="adm-range">
+                <span>Visibilidade <b id="stageBgOpacityValue">45%</b></span>
+                <input id="stageBgOpacity" type="range" min="10" max="100" step="1" value="45">
+              </label>
+              <p class="adm-hint">Com o fundo ligado, os textos do palco ganham uma borda para continuar legíveis. Isso usa um segundo player (mudo) — em PCs mais fracos, desligue.</p>
+            </div>
+            <div class="bg-preview" id="bgPreview" aria-hidden="true">
+              <div class="bg-preview-media"></div>
+              <div class="bg-preview-stage">
+                <small>AGORA</small>
+                <strong>Título do Short</strong>
+                <div class="bg-preview-video"></div>
+                <div class="bg-preview-buttons"><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <div>
+              <h2>Cursor temático</h2>
+              <p>Cursores coloridos e sincronizados dos dois jogadores. Desligado, volta o cursor normal.</p>
+            </div>
+            <label class="adm-switch"><input id="customCursorEnabled" type="checkbox" checked><span></span></label>
+          </div>
+        </div>
+
+        <div class="adm-card">
+          <div class="adm-card-head">
+            <div>
+              <h2>Cores das posições</h2>
+              <p>Usadas nos botões 1–10 e também nas cores dos Shorts no resultado final.</p>
+            </div>
+            <button id="resetColorsBtn" class="adm-btn ghost" type="button">Restaurar padrão</button>
+          </div>
+          <div id="positionColorAdminGrid" class="color-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="adm-side">
+      <div class="adm-card live-card">
+        <div class="adm-card-head compact">
+          <h2><span class="live-dot"></span> Ao vivo</h2>
+          <span id="liveRoundLabel" class="adm-muted">—</span>
+        </div>
+        <div id="liveShortPreview" class="live-short"></div>
+        <div id="livePlayers" class="live-players"></div>
+        <div id="liveRankings" class="live-rankings"></div>
+      </div>
+
+      <div class="adm-card">
+        <div class="adm-card-head compact">
+          <h2>Partida</h2>
+        </div>
+        <div class="match-actions">
+          <button id="backToLobbyBtn" class="adm-btn" type="button">↩ Voltar todos ao lobby</button>
+          <button id="resetRoomBtn" class="adm-btn danger" type="button">Resetar tudo</button>
+        </div>
+
+        <details class="debug-box">
+          <summary>🧪 Jogadores de teste</summary>
+          <div class="debug-grid">
+            <div class="debug-slot" data-slot="p1">
+              <b>P1</b>
+              <input class="debug-name" data-slot="p1" placeholder="Player Teste 1" maxlength="22">
+              <button class="adm-btn small add-debug-player" data-slot="p1" type="button">Adicionar</button>
+              <button class="adm-btn small ghost ready-debug-player" data-slot="p1" type="button">Pronto</button>
+              <button class="adm-btn small danger remove-debug-player" data-slot="p1" type="button">Remover</button>
+            </div>
+            <div class="debug-slot" data-slot="p2">
+              <b>P2</b>
+              <input class="debug-name" data-slot="p2" placeholder="Player Teste 2" maxlength="22">
+              <button class="adm-btn small add-debug-player" data-slot="p2" type="button">Adicionar</button>
+              <button class="adm-btn small ghost ready-debug-player" data-slot="p2" type="button">Pronto</button>
+              <button class="adm-btn small danger remove-debug-player" data-slot="p2" type="button">Remover</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </aside>
+  </main>
+
+  <div id="unsavedBar" class="unsaved-bar hidden" role="status" aria-live="polite">
+    <div>
+      <strong>Você tem alterações não salvas.</strong>
+      <span>Deseja salvar essas mudanças?</span>
+    </div>
+    <button id="discardBtn" class="adm-btn ghost" type="button">Descartar</button>
+    <button id="unsavedSaveBtn" class="adm-btn primary" type="button">Salvar alterações</button>
+  </div>
+
+  <div id="admToast" class="adm-toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>
